@@ -117,9 +117,16 @@ int main(int argc, char *argv[])
             close(c2p[0]);
             for(int i=0;i<8;i++){
                 read(p2c[0], &baton, 1);
-                play(shared_board, random_c, 'C');
+
                 if(isWin(shared_board)){
-                    cout<<"Child wins!"<<endl;
+                    printf("[%d Child]: I lose\n", getpid());
+                    break;
+                }
+
+                play(shared_board, random_c, 'C');
+
+                if(isWin(shared_board)){
+                    printf("[%d Child]: Winner is %d\n", getpid(), getpid());
                     break;
                 }
                 write(c2p[1], "T", 1);
@@ -129,19 +136,22 @@ int main(int argc, char *argv[])
             exit(0);
         }
         default:{
-            cout<<'['<<getpid()<<"Parent]:create a child "<<pid<<endl;
+            cout<<'['<<getpid()<<" Parent]:create a child "<<pid<<endl;
             srand(m1);
             int random_p=rand();
 
             char baton;
-            
+
             close(p2c[0]);
             close(c2p[1]);
            for(int i=0;i<8;i++){
+                if(isWin(shared_board)){
+                    printf("[%d Parent]: I lose\n", getpid());
+                    break;
+                }
                 play(shared_board, random_p, 'P');
                 if(isWin(shared_board)){
-                    cout<<"Parent wins!"<<endl;
-                    wait(NULL);
+                    printf("[%d Parent]: Winner is %d\n", getpid(), getpid());
                     break;
                 }
                 write(p2c[1], "T", 1);
@@ -150,6 +160,11 @@ int main(int argc, char *argv[])
             close(p2c[1]);
             close(c2p[0]);
             wait(NULL);
+
+            if(!isWin(shared_board)){
+                cout<<"It's a draw!"<<endl;
+            }
+
             break;
         }
     }
