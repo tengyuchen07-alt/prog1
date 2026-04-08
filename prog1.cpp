@@ -72,6 +72,11 @@ bool isWin(char board[4][4]){
 
 int main(int argc, char *argv[])
 {
+    if (argc != 3) {//防呆
+        cout << "Usage: ./main <m1> <m2>" << endl;
+        return 1;
+    }
+
     int m1=atoi(argv[1]);
     int m2=atoi(argv[2]);
     if(m1<1||m1>10||m2<1||m2>10){
@@ -164,7 +169,7 @@ int main(int argc, char *argv[])
             if(!isWin(shared_board)){
                 cout<<"It's a draw!"<<endl;
             }
-
+            shm_unlink(name);//釋放共享記憶體
             break;
         }
     }
